@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>TRADER PROFILE</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: #0b0c0e;
+      font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      min-height: 100dvh;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(145deg, #0f1115 0%, #0b0c0e 100%);
+      gap: 16px;
+    }
+
+    /* ============ SIDEBAR (Top on mobile, Left on desktop) ============ */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 16px;
+      background: rgba(20, 22, 27, 0.8);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 85px;
+      height: 85px;
+      border-radius: 50%;
+      border: 3px solid #d4af37;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+      flex-shrink: 0;
+    }
+
+    .avatar-display {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(30, 33, 40, 0.9);
+      color: #d4af37;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .avatar-display img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-edit-icon {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      background: #d4af37;
+      color: #0b0c0e;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border: 2px solid #0b0c0e;
+    }
+
+    .edit-mode .avatar-edit-icon {
+      display: flex;
+    }
+
+    .sidebar-info {
+      text-align: center;
+    }
+
+    .sidebar-name {
+      color: #e6d7b8;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .sidebar-role {
+      display: inline-block;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 16px;
+      padding: 3px 14px;
+      color: #d4af37;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+
+    .sidebar-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+
+    .btn-edit {
+      background: linear-gradient(135deg, #c9a53b, #b8942e);
+      color: #0b0c0e;
+    }
+    .btn-edit:hover { box-shadow: 0 4px 14px rgba(212,175,55,0.3); }
+
+    .btn-cancel {
+      background: transparent;
+      border: 1px solid rgba(220,80,80,0.4);
+      color: #dc5050;
+    }
+    .btn-cancel:hover { background: rgba(220,80,80,0.1); }
+
+    .btn-save {
+      background: #2ecc71;
+      color: #0b0c0e;
+    }
+    .btn-save:hover { box-shadow: 0 4px 14px rgba(46,204,113,0.3); }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ============ PROFILE CONTENT (Form) ============ */
+    .profile-content {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .section-group {
+      background: rgba(20, 22, 27, 0.7);
+      border: 1px solid rgba(212, 175, 55, 0.12);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-title {
+      color: #d4af37;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title i { font-size: 0.9rem; }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .form-row label {
+      color: #7a7a7a;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .form-row input,
+    .form-row select {
+      background: rgba(10, 11, 13, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      padding: 9px 10px;
+      color: #c0b8a8;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border 0.3s;
+      width: 100%;
+    }
+    .form-row input:focus,
+    .form-row select:focus {
+      border-color: #d4af37;
+    }
+    .form-row input:disabled,
+    .form-row select:disabled {
+      opacity: 0.7;
+      background: rgba(10,11,13,0.3);
+      color: #8a8a8a;
+    }
+
+    .password-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .password-display input {
+      flex: 1;
+    }
+    .password-display .key-icon {
+      color: #d4af37;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 6px;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    .password-display .key-icon:hover {
+      background: rgba(212,175,55,0.15);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 16px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .badge-retailer {
+      background: rgba(52, 152, 219, 0.2);
+      border: 1px solid rgba(52,152,219,0.4);
+      color: #3498db;
+    }
+    .badge-wholesale {
+      background: rgba(212, 175, 55, 0.2);
+      border: 1px solid rgba(212,175,55,0.4);
+      color: #d4af37;
+    }
+
+    .time-row {
+      display: flex;
+      gap: 10px;
+    }
+    .time-row .form-row {
+      flex: 1;
+    }
+
+    .phone-with-icon {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .phone-with-icon i {
+      color: #25D366;
+      font-size: 1rem;
+    }
+    .phone-with-icon input {
+      flex: 1;
+    }
+
+    /* ============ TOAST NOTIFICATIONS ============ */
+    .toast-container {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 320px;
+    }
+    .toast {
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 500;
+      animation: slideIn 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+    .toast-success { background: #2ecc71; }
+    .toast-error { background: #e74c3c; }
+    @keyframes slideIn {
+      from { transform: translateX(120%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ============ PASSWORD MODAL ============ */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.75);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal {
+      background: #1a1e24;
+      border: 1px solid rgba(212,175,55,0.3);
+      border-radius: 20px;
+      padding: 20px;
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .modal h3 {
+      color: #e6d7b8;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    .modal .form-row input {
+      background: rgba(10,11,13,0.8);
+    }
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    /* ============ FOOTER ============ */
+    .app-footer {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 20px;
+      color: #7a7a7a;
+      font-size: 0.7rem;
+      letter-spacing: 0.4px;
+      background: #0b0c0e;
+      border-top: 1px solid rgba(212,175,55,0.1);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .footer-center { flex: 1; text-align: center; }
+    .footer-right { position: absolute; right: 20px; font-weight: 400; color: #9e9e9e; }
+
+    /* ============ DESKTOP ============ */
+    @media (min-width: 768px) {
+      .main-content {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 24px;
+        gap: 24px;
+      }
+      .sidebar {
+        max-width: 240px;
+        position: sticky;
+        top: 20px;
+      }
+      .profile-content {
+        max-width: 480px;
+        flex: 1;
+      }
+      .app-wrapper { max-width: 850px; }
+    }
+    @media (min-width: 1024px) {
+      .app-wrapper { max-width: 800px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+    <div class="main-content">
+      
+      <!-- ============ SIDEBAR ============ -->
+      <div class="sidebar" id="sidebar">
+        <div class="avatar-wrapper" id="avatarWrapper">
+          <div class="avatar-display" id="avatarDisplay">
+            <span id="avatarInitials">MS</span>
+            <img id="avatarImg" src="" alt="Avatar" style="display:none;">
+          </div>
+          <div class="avatar-edit-icon" id="avatarEditIcon" title="Change photo">
+            <i class="fas fa-camera"></i>
+          </div>
+        </div>
+        <div class="sidebar-info">
+          <div class="sidebar-name" id="sidebarName">Mudhihiri M. Selemani</div>
+          <div class="sidebar-role" id="sidebarRole">WHOLESALE TRADER</div>
+        </div>
+        <div class="sidebar-actions">
+          <button class="btn btn-edit" id="btnEditProfile">
+            <i class="fas fa-edit"></i> Edit Profile
+          </button>
+          <button class="btn btn-cancel hidden" id="btnCancelEdit">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button class="btn btn-save hidden" id="btnSaveChanges">
+            <i class="fas fa-save"></i> Save
+          </button>
+        </div>
+      </div>
+
+      <!-- ============ PROFILE FORM ============ -->
+      <div class="profile-content">
+        
+        <!-- Personal Details -->
+        <div class="section-group">
+          <div class="section-title"><i class="fas fa-user"></i> Personal Details</div>
+          <div class="form-row">
+            <label>Full Name</label>
+            <input type="text" id="fullName" value="Mudhihiri M. Selemani" disabled>
+          </div>
+          <div class="form-row">
+            <label>Email Address</label>
+            <input type="email" id="email" value="mudhihirjz@trading.com" disabled>
+          </div>
+          <div class="form-row">
+            <label>Password</label>
+            <div class="password-display">
+              <input type="password" value="••••••••••••" disabled id="passwordField">
+              <span class="key-icon" id="openPasswordModal" title="Change Password">
+                <i class="fas fa-key"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Business Details -->
+        <div class="section-group">
+          <div class="section-title"><i class="fas fa-briefcase"></i> Business Details</div>
+          <div class="form-row">
+            <label>Company Name</label>
+            <input type="text" id="companyName" value="Mudhihirjz Tech" disabled>
+          </div>
+          <div class="form-row">
+            <label>Trader Type</label>
+            <span class="badge badge-wholesale" id="traderBadge">WHOLESALE TRADER</span>
+          </div>
+          <div class="time-row">
+            <div class="form-row">
+              <label>Opening Time</label>
+              <input type="time" id="openingTime" value="08:00" disabled>
+            </div>
+            <div class="form-row">
+              <label>Closing Time</label>
+              <input type="time" id="closingTime" value="17:00" disabled>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Phone Number</label>
+            <input type="tel" id="phoneNumber" value="+255 712 345 678" disabled>
+          </div>
+          <div class="form-row">
+            <label>WhatsApp Number</label>
+            <div class="phone-with-icon">
+              <i class="fab fa-whatsapp"></i>
+              <input type="tel" id="whatsappNumber" value="+255 712 345 678" disabled>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="section-group">
+          <div class="section-title"><i class="fas fa-map-marker-alt"></i> Location</div>
+          <div class="form-row">
+            <label>Region</label>
+            <input type="text" id="region" value="Pwani" disabled>
+          </div>
+          <div class="form-row">
+            <label>District</label>
+            <input type="text" id="district" value="Bagamoyo" disabled>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ FOOTER ============ -->
+    <div class="app-footer">
+      <span class="footer-center">All right reserved @2026</span>
+      <span class="footer-right">v.1</span>
+    </div>
+  </div>
+
+  <!-- ============ TOAST CONTAINER ============ -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ============ PASSWORD MODAL ============ -->
+  <div class="modal-overlay hidden" id="passwordModalOverlay">
+    <div class="modal">
+      <h3><i class="fas fa-lock"></i> Change Password</h3>
+      <div class="form-row">
+        <label>Current Password</label>
+        <input type="password" id="currentPassword" placeholder="Enter current password">
+      </div>
+      <div class="form-row">
+        <label>New Password (min 8 chars)</label>
+        <input type="password" id="newPassword" placeholder="Enter new password">
+      </div>
+      <div class="form-row">
+        <label>Confirm New Password</label>
+        <input type="password" id="confirmNewPassword" placeholder="Confirm new password">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" id="closePasswordModal">Cancel</button>
+        <button class="btn btn-save" id="submitPasswordChange">Update Password</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ============ DOM ELEMENTS ============
+      const sidebar = document.getElementById('sidebar');
+      const avatarDisplay = document.getElementById('avatarDisplay');
+      const avatarInitials = document.getElementById('avatarInitials');
+      const avatarImg = document.getElementById('avatarImg');
+      const avatarEditIcon = document.getElementById('avatarEditIcon');
+      const sidebarName = document.getElementById('sidebarName');
+      const sidebarRole = document.getElementById('sidebarRole');
+      const btnEditProfile = document.getElementById('btnEditProfile');
+      const btnCancelEdit = document.getElementById('btnCancelEdit');
+      const btnSaveChanges = document.getElementById('btnSaveChanges');
+      const traderBadge = document.getElementById('traderBadge');
+      const passwordModalOverlay = document.getElementById('passwordModalOverlay');
+      const openPasswordModal = document.getElementById('openPasswordModal');
+      const closePasswordModal = document.getElementById('closePasswordModal');
+      const submitPasswordChange = document.getElementById('submitPasswordChange');
+      const toastContainer = document.getElementById('toastContainer');
+      const avatarWrapper = document.getElementById('avatarWrapper');
+
+      // Form inputs
+      const allInputs = document.querySelectorAll('.profile-content input, .profile-content select');
+      const editableInputs = [
+        'fullName', 'email', 'companyName', 'openingTime', 'closingTime',
+        'phoneNumber', 'whatsappNumber', 'region', 'district'
+      ];
+
+      let isEditMode = false;
+      let originalValues = {};
+
+      // ============ PROFILE DATA ============
+      const profileData = {
+        firstName: 'Mudhihiri',
+        middleName: 'M.',
+        lastName: 'Selemani',
+        fullName: 'Mudhihiri M. Selemani',
+        email: 'mudhihirjz@trading.com',
+        companyName: 'Mudhihirjz Tech',
+        traderType: 'wholesale',
+        openingTime: '08:00',
+        closingTime: '17:00',
+        phoneNumber: '+255 712 345 678',
+        whatsappNumber: '+255 712 345 678',
+        region: 'Pwani',
+        district: 'Bagamoyo',
+        avatar: null,
+        password: 'Secure@2026'
+      };
+
+      // ============ INITIALIZE PROFILE ============
+      function initProfile() {
+        updateSidebar();
+        document.getElementById('fullName').value = profileData.fullName;
+        document.getElementById('email').value = profileData.email;
+        document.getElementById('companyName').value = profileData.companyName;
+        document.getElementById('openingTime').value = profileData.openingTime;
+        document.getElementById('closingTime').value = profileData.closingTime;
+        document.getElementById('phoneNumber').value = profileData.phoneNumber;
+        document.getElementById('whatsappNumber').value = profileData.whatsappNumber;
+        document.getElementById('region').value = profileData.region;
+        document.getElementById('district').value = profileData.district;
+        updateTraderBadge();
+        updateAvatar();
+      }
+
+      function updateSidebar() {
+        sidebarName.textContent = profileData.fullName;
+        const roleText = profileData.traderType === 'wholesale' ? 'WHOLESALE TRADER' : 'RETAIL TRADER';
+        sidebarRole.textContent = roleText;
+      }
+
+      function updateTraderBadge() {
+        traderBadge.textContent = profileData.traderType === 'wholesale' ? 'WHOLESALE TRADER' : 'RETAIL TRADER';
+        traderBadge.className = 'badge';
+        traderBadge.classList.add(profileData.traderType === 'wholesale' ? 'badge-wholesale' : 'badge-retailer');
+        sidebarRole.textContent = traderBadge.textContent;
+      }
+
+      function updateAvatar() {
+        if (profileData.avatar) {
+          avatarImg.src = profileData.avatar;
+          avatarImg.style.display = 'block';
+          avatarInitials.style.display = 'none';
+        } else {
+          const initials = getInitials(profileData.fullName);
+          avatarInitials.textContent = initials;
+          avatarInitials.style.display = 'flex';
+          avatarImg.style.display = 'none';
+        }
+      }
+
+      function getInitials(name) {
+        const parts = name.split(' ').filter(p => p.length > 0);
+        if (parts.length >= 2) {
+          return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        return parts[0] ? parts[0][0].toUpperCase() : '??';
+      }
+
+      // ============ TOAST ============
+      function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        setTimeout(() => {
+          toast.remove();
+        }, 3000);
+      }
+
+      // ============ EDIT MODE ============
+      function enterEditMode() {
+        isEditMode = true;
+        originalValues = {};
+        editableInputs.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            originalValues[id] = el.value;
+            el.disabled = false;
+          }
+        });
+        sidebar.classList.add('edit-mode');
+        btnEditProfile.classList.add('hidden');
+        btnCancelEdit.classList.remove('hidden');
+        btnSaveChanges.classList.remove('hidden');
+      }
+
+      function cancelEditMode() {
+        isEditMode = false;
+        editableInputs.forEach(id => {
+          const el = document.getElementById(id);
+          if (el && originalValues[id] !== undefined) {
+            el.value = originalValues[id];
+            el.disabled = true;
+          }
+        });
+        sidebar.classList.remove('edit-mode');
+        btnEditProfile.classList.remove('hidden');
+        btnCancelEdit.classList.add('hidden');
+        btnSaveChanges.classList.add('hidden');
+      }
+
+      function saveChanges() {
+        const newFullName = document.getElementById('fullName').value.trim();
+        const newEmail = document.getElementById('email').value.trim();
+        const newCompany = document.getElementById('companyName').value.trim();
+        const newOpening = document.getElementById('openingTime').value;
+        const newClosing = document.getElementById('closingTime').value;
+        const newPhone = document.getElementById('phoneNumber').value.trim();
+        const newWhatsapp = document.getElementById('whatsappNumber').value.trim();
+        const newRegion = document.getElementById('region').value.trim();
+        const newDistrict = document.getElementById('district').value.trim();
+
+        // Validation
+        if (!newFullName || !newEmail || !newCompany || !newPhone || !newRegion || !newDistrict) {
+          showToast('Please fill all required fields!', 'error');
+          return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newEmail)) {
+          showToast('Please enter a valid email address!', 'error');
+          return;
+        }
+
+        // Save to profile data
+        profileData.fullName = newFullName;
+        profileData.email = newEmail;
+        profileData.companyName = newCompany;
+        profileData.openingTime = newOpening;
+        profileData.closingTime = newClosing;
+        profileData.phoneNumber = newPhone;
+        profileData.whatsappNumber = newWhatsapp;
+        profileData.region = newRegion;
+        profileData.district = newDistrict;
+
+        // Update sidebar
+        updateSidebar();
+        updateAvatar();
+
+        // Disable inputs
+        editableInputs.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.disabled = true;
+        });
+
+        sidebar.classList.remove('edit-mode');
+        btnEditProfile.classList.remove('hidden');
+        btnCancelEdit.classList.add('hidden');
+        btnSaveChanges.classList.add('hidden');
+        isEditMode = false;
+
+        showToast('Profile updated successfully!', 'success');
+      }
+
+      // ============ AVATAR CHANGE ============
+      avatarEditIcon.addEventListener('click', function() {
+        if (!isEditMode) return;
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+              profileData.avatar = event.target.result;
+              updateAvatar();
+              showToast('Profile photo updated!', 'success');
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+        fileInput.click();
+      });
+
+      // ============ EVENT LISTENERS ============
+      btnEditProfile.addEventListener('click', enterEditMode);
+      btnCancelEdit.addEventListener('click', cancelEditMode);
+      btnSaveChanges.addEventListener('click', saveChanges);
+
+      // Password Modal
+      openPasswordModal.addEventListener('click', function() {
+        passwordModalOverlay.classList.remove('hidden');
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
+      });
+
+      closePasswordModal.addEventListener('click', function() {
+        passwordModalOverlay.classList.add('hidden');
+      });
+
+      passwordModalOverlay.addEventListener('click', function(e) {
+        if (e.target === passwordModalOverlay) {
+          passwordModalOverlay.classList.add('hidden');
+        }
+      });
+
+      submitPasswordChange.addEventListener('click', function() {
+        const currentPw = document.getElementById('currentPassword').value;
+        const newPw = document.getElementById('newPassword').value;
+        const confirmPw = document.getElementById('confirmNewPassword').value;
+
+        if (!currentPw || !newPw || !confirmPw) {
+          showToast('Please fill all password fields!', 'error');
+          return;
+        }
+
+        if (currentPw !== profileData.password) {
+          showToast('Current password is incorrect!', 'error');
+          return;
+        }
+
+        if (newPw.length < 8) {
+          showToast('New password must be at least 8 characters!', 'error');
+          return;
+        }
+
+        if (newPw !== confirmPw) {
+          showToast('New passwords do not match!', 'error');
+          return;
+        }
+
+        profileData.password = newPw;
+        passwordModalOverlay.classList.add('hidden');
+        showToast('Password changed successfully!', 'success');
+      });
+
+      // ============ INIT ============
+      initProfile();
+    })();
+  </script>
+</body>
+</html>
